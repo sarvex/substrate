@@ -15,20 +15,16 @@ import subprocess, sys
 # Get all crates
 output = subprocess.check_output(["cargo", "tree", "--locked", "--workspace", "--depth", "0", "--prefix", "none"])
 
-# Convert the output into a proper list
-crates = []
-for line in output.splitlines():
-	if line != b"":
-		crates.append(line.decode('utf8').split(" ")[0])
-
-# Make the list unique and sorted
-crates = list(set(crates))
-crates.sort()
-
+crates = [
+	line.decode('utf8').split(" ")[0]
+	for line in output.splitlines()
+	if line != b""
+]
+crates = sorted(set(crates))
 target_group = int(sys.argv[1]) - 1
 groups_total = int(sys.argv[2])
 
-if len(crates) == 0:
+if not crates:
 	print("No crates detected!", file=sys.stderr)
 	sys.exit(1)
 
